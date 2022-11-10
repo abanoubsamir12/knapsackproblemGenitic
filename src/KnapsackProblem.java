@@ -1,4 +1,3 @@
-
 import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,8 +72,9 @@ public class KnapsackProblem {
         ArrayList<chromosome> res = new ArrayList<>();
 
         res.add(population.get(closestInd(b,population)));
+        population.remove(population.get(closestInd(b,population)));
         res.add(population.get(closestInd(c,population)));
-
+        population.remove(population.get(closestInd(c,population)));
         return  res;
     }
     public  static String  crossover(chromosome c1 , chromosome c2 ) {
@@ -118,14 +118,24 @@ public class KnapsackProblem {
         return  new chromosome(ans);
     }
     public static void calcFitness(int numberOfItems, ArrayList<chromosome> population
-            , ArrayList<Integer>valueOfItems,ArrayList<Integer>weightOfItems){
+            , ArrayList<Integer>valueOfItems,ArrayList<Integer>weightOfItems , int knapsackWeight){
+
+        for(int i=0 ; i< population.size() ; i++)
+        {
+            population.get(i).value=0;
+            population.get(i).weight=0;
+            population.get(i).rankVal=0;
+        }
         for (int i=0; i< population.size(); i++){
             for (int j=0; j<numberOfItems; j++){
                 if(population.get(i).content.charAt(j) == '1'){
                     population.get(i).value+=valueOfItems.get(j);
                     population.get(i).weight += weightOfItems.get(j);
                 }
+
             }
+            if(population.get(i).weight > knapsackWeight)
+                population.remove(population.get(i));
         }
     }
 
@@ -155,28 +165,38 @@ public class KnapsackProblem {
                 value_of_items.add(value);
             }
             makePopulation(population , numOfItems);
-            calcFitness(numOfItems,population,value_of_items,weight_of_items);
-            Collections.sort(population, new Comparator<chromosome>() {
-                public int compare(chromosome b1, chromosome b2) {
-                    if(b1.value > b2.value)
-                        return 1;
-                    else if(b1.value < b2.value)
-                        return -1;
-                    else
-                        return 0;
-                }
-            });
-            ArrayList<chromosome> rSelected = rankSelection(population);
-            String bigS =  crossover(rSelected.get(0) , rSelected.get(1));
-            rSelected.get(0 ).content = bigS.substring(0 , numOfItems);
-            rSelected.get(1).content = bigS.substring(numOfItems , numOfItems*2);
-            mutation(rSelected.get(0), numOfItems);
+            for(int i=0 ; i<30 ; i++) {
+                calcFitness(numOfItems, population, value_of_items, weight_of_items, knapsack_capacity);
+                Collections.sort(population, new Comparator<chromosome>() {
+                    public int compare(chromosome b1, chromosome b2) {
+                        if (b1.value > b2.value)
+                            return 1;
+                        else if (b1.value < b2.value)
+                            return -1;
+                        else
+                            return 0;
+                    }
+                });
+                ArrayList<chromosome> rSelected = rankSelection(population);
+                String bigS = crossover(rSelected.get(0), rSelected.get(1));
+                rSelected.get(0).content = bigS.substring(0, numOfItems);
+                rSelected.get(1).content = bigS.substring(numOfItems, numOfItems * 2);
+                population.add(rSelected.get(0));
+                population.add(rSelected.get(1));
+                mutation(population.get(0), numOfItems);
+                Collections.sort(population, new Comparator<chromosome>() {
+                    public int compare(chromosome b1, chromosome b2) {
+                        if (b1.value > b2.value)
+                            return 1;
+                        else if (b1.value < b2.value)
+                            return -1;
+                        else
+                            return 0;
+                    }
+                });
 
-
-            for(int i=0 ; i< population.size() ; i++)
-            {
-                System.out.println(population.get(i));
             }
+                System.out.println(population.get(population.size()-1));
             test_cases--;
         }
     }
