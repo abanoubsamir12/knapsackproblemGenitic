@@ -38,10 +38,10 @@ public class KnapsackProblem {
     public static int closestInd(int rand , ArrayList<chromosome> population)
     {
         int min = 100000;
-        int returnedInd = -1;
+        int returnedInd = 0;
         for(int i=0 ; i<population.size() ; i++)
         {
-            if(Math.abs(rand - population.get(i).rankVal) < min)
+            if(Math.abs(rand - population.get(i).rankVal) <= min)
             {
                 min = Math.abs(rand - population.get(i).rankVal);
                 returnedInd = i;
@@ -55,7 +55,7 @@ public class KnapsackProblem {
         int numofItems = population.get(0).content.length();
         int iterator = numofItems;
         double sum = numofItems * (numofItems+1) /2;
-        for(int i=0 ; i< numofItems ; i++)
+        for(int i=0 ; i< population.size() ; i++)
         {
             population.get(i).rankVal = (int) ((iterator)/sum * 100);
             iterator--;
