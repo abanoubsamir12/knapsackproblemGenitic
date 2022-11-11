@@ -53,12 +53,10 @@ public class KnapsackProblem {
     public static ArrayList<chromosome> rankSelection(ArrayList<chromosome> population)
     {
         int numofItems = population.get(0).content.length();
-        int iterator = numofItems;
         double sum = numofItems * (numofItems+1) /2;
         for(int i=0 ; i< population.size() ; i++)
         {
-            population.get(i).rankVal = (int) ((iterator)/sum * 100);
-            iterator--;
+            population.get(i).rankVal = (int) ((i+1)/sum * 100);
         }
         int b = (int)(Math.random()*(100-0+1)+0);
         int c = (int)(Math.random()*(100-0+1)+0);
@@ -184,19 +182,23 @@ public class KnapsackProblem {
                 population.add(rSelected.get(0));
                 population.add(rSelected.get(1));
                 mutation(population.get(0), numOfItems);
-                Collections.sort(population, new Comparator<chromosome>() {
-                    public int compare(chromosome b1, chromosome b2) {
-                        if (b1.value > b2.value)
-                            return 1;
-                        else if (b1.value < b2.value)
-                            return -1;
-                        else
-                            return 0;
-                    }
-                });
 
             }
-                System.out.println(population.get(population.size()-1));
+            calcFitness(numOfItems,population,value_of_items,weight_of_items,knapsack_capacity);
+            Collections.sort(population, new Comparator<chromosome>() {
+                public int compare(chromosome b1, chromosome b2) {
+                    if (b1.value > b2.value)
+                        return 1;
+                    else if (b1.value < b2.value)
+                        return -1;
+                    else
+                        return 0;
+                }
+            });
+
+
+
+            System.out.println(population.get(population.size()-1));
             test_cases--;
         }
     }
